@@ -1,0 +1,27 @@
+services:
+
+  db:
+    image: mysql:8.4.1
+    restart: always
+    container_name: crud_db
+    ports:
+      - "3306:3306"
+    networks:
+      - msnetwork
+    environment:
+      - MYSQL_DATABASE=crud_db
+      - MYSQL_ROOT_PASSWORD=root
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "15432:8080"
+    depends_on:
+      - db
+    networks:
+      - msnetwork
+
+networks:
+  msnetwork:
+    driver: bridge

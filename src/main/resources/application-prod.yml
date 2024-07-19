@@ -9,14 +9,15 @@ spring:
 
   # Database Configuration
   datasource:
-    url: jdbc:mysql://localhost:3306/crud
-    username: crud
-    password: 12345
+    url: jdbc:mysql://localhost:3306/crud_db
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     database:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
