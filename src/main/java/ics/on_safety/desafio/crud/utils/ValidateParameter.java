@@ -8,7 +8,7 @@ public class ValidateParameter {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException ex) {
-            throw new RuntimeException("Parâmetro Inválido");
+            throw new RuntimeException("Parâmetro Inválido " + ex.getMessage());
         }
     }
 }

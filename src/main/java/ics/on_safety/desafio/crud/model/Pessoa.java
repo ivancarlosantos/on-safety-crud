@@ -15,13 +15,14 @@ import java.time.LocalDate;
 public class Pessoa implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String nome;
-    String cpf;
-    LocalDate dataNascimento;
-    String email;
 
-    @Embedded
-    Endereco endereco;
+    String nome;
+
+    String cpf;
+
+    LocalDate dataNascimento;
+
+    String email;
 }
