@@ -12,7 +12,7 @@
     <artifactId>crud</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Crud On Safety</name>
-    <description>Projeto de Desafio On Safety Java Spring Boot</description>
+    <description>Projeto de Desafio On Safety - Java Spring Boot</description>
 
     <properties>
         <java.version>17</java.version>
@@ -108,6 +108,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>1.19.8</version>
@@ -116,8 +123,9 @@
 
         <dependency>
             <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>1.19.8</version>
+            <artifactId>mysql</artifactId>
+            <version>1.20.0</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
