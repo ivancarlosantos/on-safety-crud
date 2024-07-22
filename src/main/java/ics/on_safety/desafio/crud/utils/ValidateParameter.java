@@ -1,5 +1,8 @@
 package ics.on_safety.desafio.crud.utils;
 
+import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
+import ics.on_safety.desafio.crud.exception.ValidateParameterException;
+
 public class ValidateParameter {
 
     private ValidateParameter() {}
@@ -8,7 +11,7 @@ public class ValidateParameter {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException ex) {
-            throw new RuntimeException("Parâmetro Inválido " + ex.getMessage());
+            throw new ValidateParameterException("Parâmetro Inválido " + ex.getMessage());
         }
     }
 }

@@ -1,6 +1,7 @@
 package ics.on_safety.desafio.crud.service;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.exception.DataViolationException;
 import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
 import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
@@ -31,6 +32,11 @@ public class PessoaServices {
                 .dataNascimento(ld)
                 .email(dto.email())
                 .build();
+
+        if (findByPessoa(dto) != null) {
+            throw new DataViolationException("[PESSOA/CPF JÁ CADASTRADO]");
+        }
+
         repository.save(p);
 
         return new PessoaDTO(p.getNome(), p.getCpf(), ld.toString(), p.getEmail());
@@ -61,12 +67,15 @@ public class PessoaServices {
                 .toList();
     }
 
-    public PessoaDTO update(String value, PessoaDTO dto) {
+    public PessoaDTO update(String id, PessoaDTO dto) {
 
-        Pessoa pessoa = findID(value);
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+
+        Pessoa pessoa = findID(id);
         pessoa.setNome(dto.nome());
         pessoa.setCpf(dto.cpf());
-        pessoa.setDataNascimento(LocalDate.parse(dto.dataNascimento()));
+        pessoa.setDataNascimento(ld);
         pessoa.setEmail(dto.email());
 
         repository.save(pessoa);
@@ -83,7 +92,7 @@ public class PessoaServices {
 
         repository.deleteById(pessoa.getId());
 
-        return "Pessoa Removido";
+        return "Pessoa Removida";
     }
 
     private Pessoa findID(String value) {
@@ -99,5 +108,13 @@ public class PessoaServices {
         model = findID.get();
 
         return model;
+    }
+
+    private PessoaDTO findByPessoa(PessoaDTO dto) {
+        Pessoa p = repository.findByPessoa(dto.cpf());
+        if (p != null) {
+            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail());
+        }
+        return null;
     }
 }
