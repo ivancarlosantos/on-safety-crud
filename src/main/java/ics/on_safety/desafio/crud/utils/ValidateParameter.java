@@ -1,6 +1,5 @@
 package ics.on_safety.desafio.crud.utils;
 
-import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
 import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 
 public class ValidateParameter {

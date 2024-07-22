@@ -1,6 +1,7 @@
 package ics.on_safety.desafio.crud.servicetest;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
 import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
@@ -51,12 +52,12 @@ public class PessoaServiceTest {
                 .email("email@email.com")
                 .build();
 
-            pessoaDTO = new PessoaDTO(
-                    "Nome Teste",
-                    "12345678900",
-                    "01/01/2000",
-                    "email@email.com"
-            );
+        pessoaDTO = new PessoaDTO(
+                "Nome Teste",
+                "12345678900",
+                "01/01/2000",
+                "email@email.com"
+        );
     }
 
     @Test
@@ -124,6 +125,12 @@ public class PessoaServiceTest {
         verify(repository, times(1)).findById(anyLong());
 
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testFindWithParameterIDError() {
+        String id = "A";
+        assertThrows(ValidateParameterException.class, () -> service.findByID(id));
     }
 
     @Test
