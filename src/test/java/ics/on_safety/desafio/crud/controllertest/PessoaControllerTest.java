@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -106,7 +107,9 @@ public class PessoaControllerTest {
 
         when(service.list()).thenReturn(List.of(dto1, dto2));
 
-        mockMvc.perform(get("/api/list"))
+        mockMvc.perform(get("/api/list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nome").value(dto1.nome()))
                 .andExpect(jsonPath("$[0].cpf").value(dto1.cpf()))
@@ -170,6 +173,7 @@ public class PessoaControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent())
+                .andDo(MockMvcResultHandlers.print());
     }
 }
