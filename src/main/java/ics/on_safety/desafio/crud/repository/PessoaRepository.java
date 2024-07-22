@@ -13,4 +13,7 @@ public interface PessoaRepository extends JpaRepository<Pessoa, Long> {
 
     @Query(value = "SELECT * FROM pessoa u WHERE u.nome LIKE %?1%", nativeQuery = true)
     List<Pessoa> findPessoaByNome(@Param("nome") String nome);
+
+    @Query(value = "SELECT u FROM Pessoa u WHERE u.cpf=:cpf")
+    Pessoa findByPessoa(@Param("cpf") String cpf);
 }

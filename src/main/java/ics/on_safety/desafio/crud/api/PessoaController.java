@@ -25,7 +25,7 @@ public class PessoaController {
 
     @PutMapping(path = "/update/{id}")
     public ResponseEntity<PessoaDTO> update(@PathVariable String id, @Valid @RequestBody PessoaDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(services.update(id, dto));
+        return ResponseEntity.status(HttpStatus.OK).body(services.update(id, dto));
     }
 
     @GetMapping(path = "/list")
