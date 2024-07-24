@@ -1,0 +1,54 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>[[${pessoa.id ne null ? 'Editar Pessoa' : 'Registrar Pessoa'}]]</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+          crossorigin="anonymous"/>
+</head>
+<body>
+
+<div class="container">
+
+    <h3>[[${pessoa.id ne null ? 'Editar Pessoa' : 'Registrar Pessoa'}]]</h3>
+    <hr/>
+
+    <br/>
+    <div th:each="m:${msg}">
+        <span th:text="${m}"> </span>
+    </div>
+    <br/>
+
+    <form th:action="@{/savePessoa}" th:object="${pessoa}" method="POST">
+
+        <input id="nome" type="text" th:field="*{nome}" class="form-control col-4 mb-4" th:errorClass="is-invalid"
+               autofocus="autofocus" placeholder="Digite seu nome"/>
+        <div th:if="${#fields.hasErrors('nome')} ? has-error" th:errors="*{nome}" class="invalid-feedback"></div>
+
+        <input id="cpf" type="text" th:field="*{cpf}" class="form-control col-4 mb-4" th:errorClass="is-invalid"
+               placeholder="Digite seu cpf"/>
+        <div th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}" class="invalid-feedback"></div>
+
+        <input type="date" th:field="*{dataNascimento}" class="form-control col-4 mb-4"/>
+
+        <input id="email" type="text" th:field="*{email}" class="form-control col-4 mb-4" th:errorClass="is-invalid"
+               placeholder="Digite seu e-mail"/>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="invalid-feedback"></div>
+
+        <button type="submit" class="btn btn-primary col-2">Save</button>
+        <input type="hidden" th:field="*{id}"/>
+
+    </form>
+    <hr/>
+    <a th:href="@{/list}">Voltar a Lista de Pessoas</a>
+</div>
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

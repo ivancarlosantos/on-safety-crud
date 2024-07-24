@@ -1,6 +1,7 @@
 package ics.on_safety.desafio.crud.servicetest;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
 import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
 import ics.on_safety.desafio.crud.model.Pessoa;
@@ -47,14 +48,14 @@ public class PessoaServiceTest {
         pessoa = Pessoa.builder()
                 .id(1L)
                 .nome("Nome Teste")
-                .cpf("12345678900")
+                .cpf("012.696.448-31")
                 .dataNascimento(ld)
                 .email("email@email.com")
                 .build();
 
         pessoaDTO = new PessoaDTO(
                 "Nome Teste",
-                "12345678900",
+                "459.827.228-71",
                 "01/01/2000",
                 "email@email.com"
         );
@@ -134,6 +135,12 @@ public class PessoaServiceTest {
     }
 
     @Test
+    void testPessoaNotFound() {
+        String id = "100";
+        assertThrows(RegraDeNegocioException.class, () -> service.findByID(id));
+    }
+
+    @Test
     public void testList() {
         when(repository.findAll()).thenReturn(Collections.singletonList(pessoa));
 
@@ -185,7 +192,7 @@ public class PessoaServiceTest {
         assertNotNull(result);
         assertEquals(pessoa.getNome(), result.nome());
         assertEquals(pessoa.getCpf(), result.cpf());
-        assertEquals("2000-01-01", result.dataNascimento());
+        assertEquals(pessoa.getDataNascimento().toString(), result.dataNascimento());
         assertEquals(pessoa.getEmail(), result.email());
 
         verify(repository, times(1)).save(pessoa);
