@@ -48,14 +48,14 @@ public class PessoaServiceTest {
         pessoa = Pessoa.builder()
                 .id(1L)
                 .nome("Nome Teste")
-                .cpf("12345678900")
+                .cpf("012.696.448-31")
                 .dataNascimento(ld)
                 .email("email@email.com")
                 .build();
 
         pessoaDTO = new PessoaDTO(
                 "Nome Teste",
-                "12345678900",
+                "459.827.228-71",
                 "01/01/2000",
                 "email@email.com"
         );

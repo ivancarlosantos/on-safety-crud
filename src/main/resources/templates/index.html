@@ -15,7 +15,13 @@
 <body>
 
 <div class="container">
-    <br/>
+
+    <div th:if="${message != null}"
+         class="alert alert-success alert-dismissible">
+        [[${message}]]
+        <button type="button" class="btn btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
     <h3>Lista de Pessoas</h3>
 
     <hr/>
