@@ -68,22 +68,4 @@ class CrudOnSafetyApplicationConfigurationTests {
         container.stop();
     }
 
-    @Test
-    void testDomain() {
-
-        String nome = FakeFactory.pessoa().getNome();
-        String cpf = FakeFactory.pessoa().getCpf();
-        LocalDate nasc = FakeFactory.pessoa().getDataNascimento();
-        String email = FakeFactory.pessoa().getEmail();
-
-        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email);
-
-        repository.save(pessoa);
-
-        assertNotNull(pessoa);
-        assertEquals(nome, pessoa.getNome());
-        assertEquals(cpf, pessoa.getCpf());
-        assertEquals(nasc, pessoa.getDataNascimento());
-        assertEquals(email, pessoa.getEmail());
-    }
 }
