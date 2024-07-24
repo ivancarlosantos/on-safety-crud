@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @Slf4j
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CrudOnSafetyApplicationTestsConfiguration {
+class CrudOnSafetyApplicationConfigurationTests {
 
     @LocalServerPort
     Integer port;

@@ -9,7 +9,6 @@ import ics.on_safety.desafio.crud.utils.ValidateParameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -21,7 +20,7 @@ public class PessoaServices {
 
     private final PessoaRepository repository;
 
-    public PessoaDTO persist(PessoaDTO dto) throws ParseException {
+    public PessoaDTO persist(PessoaDTO dto) {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
@@ -39,7 +38,7 @@ public class PessoaServices {
 
         repository.save(p);
 
-        return new PessoaDTO(p.getNome(), p.getCpf(), ld.toString(), p.getEmail());
+        return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail());
     }
 
     public PessoaDTO findByID(String value) {

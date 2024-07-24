@@ -43,10 +43,10 @@ public class PessoaControllerTest {
     @Test
     void persist() throws Exception {
 
-        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail());
-
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
+
+        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail());
 
         when(service.persist(dto)).thenReturn(dto);
 
@@ -67,6 +67,9 @@ public class PessoaControllerTest {
 
     @Test
     void testUpdate() throws Exception {
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
 
         PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail());
 
@@ -126,7 +129,10 @@ public class PessoaControllerTest {
     @Test
     void shouldGetPessoaByID() throws Exception {
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
         String id = "1";
+
         PessoaDTO dto = new PessoaDTO(
                 FakeFactory.pessoa().getNome(),
                 "877.930.068-52",
@@ -147,6 +153,9 @@ public class PessoaControllerTest {
 
     @Test
     void testFindPessoa() throws Exception {
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
 
         PessoaDTO dto = new PessoaDTO(
                 FakeFactory.pessoa().getNome(),

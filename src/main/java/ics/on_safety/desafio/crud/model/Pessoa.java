@@ -1,7 +1,9 @@
 package ics.on_safety.desafio.crud.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Past;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDate;
