@@ -3,13 +3,13 @@ package ics.on_safety.desafio.crud.controllertest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ics.on_safety.desafio.crud.api.PessoaController;
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.factory.FakeFactory;
 import ics.on_safety.desafio.crud.service.PessoaServices;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,10 +43,10 @@ public class PessoaControllerTest {
     @Test
     void persist() throws Exception {
 
-        PessoaDTO dto = new PessoaDTO("Teste Nome", "877.930.068-52", "01/01/2000", "mail@mail.com");
-
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
+
+        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail());
 
         when(service.persist(dto)).thenReturn(dto);
 
@@ -68,7 +68,10 @@ public class PessoaControllerTest {
     @Test
     void testUpdate() throws Exception {
 
-        PessoaDTO dto = new PessoaDTO("Teste Nome", "877.930.068-52", "01/01/2000", "mail@mail.com");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
+
+        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail());
 
         when(service.update("1", dto)).thenReturn(dto);
 
@@ -92,17 +95,17 @@ public class PessoaControllerTest {
     void testList() throws Exception {
 
         PessoaDTO dto1 = new PessoaDTO(
-                "Nome Teste",
+                FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
                 "01/01/2000",
-                "email@email.com"
+                FakeFactory.pessoa().getEmail()
         );
 
         PessoaDTO dto2 = new PessoaDTO(
-                "Nome Teste",
+                FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
                 "01/01/2000",
-                "email@email.com"
+                FakeFactory.pessoa().getEmail()
         );
 
         when(service.list()).thenReturn(List.of(dto1, dto2));
@@ -126,12 +129,15 @@ public class PessoaControllerTest {
     @Test
     void shouldGetPessoaByID() throws Exception {
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
         String id = "1";
+
         PessoaDTO dto = new PessoaDTO(
-                "Nome Teste",
+                FakeFactory.pessoa().getNome(),
                 "877.930.068-52",
                 "01/01/2000",
-                "email@email.com"
+                FakeFactory.pessoa().getEmail()
         );
 
         when(service.findByID(id)).thenReturn(dto);
@@ -148,11 +154,14 @@ public class PessoaControllerTest {
     @Test
     void testFindPessoa() throws Exception {
 
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
+
         PessoaDTO dto = new PessoaDTO(
-                "Nome Teste",
+                FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
                 "01/01/2000",
-                "email@email.com"
+                FakeFactory.pessoa().getEmail()
         );
 
         when(service.findPessoaByNome(dto.nome())).thenReturn(List.of(dto));

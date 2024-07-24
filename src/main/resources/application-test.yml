@@ -1,0 +1,24 @@
+# Server Port Configuration
+server:
+  port: 8080
+
+#Application Name
+spring:
+  application:
+    name: test
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/crud_db
+    username: postgres
+    password: 12345
+
+  # Hibernate Configuration
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
