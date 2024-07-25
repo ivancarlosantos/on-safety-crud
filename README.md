@@ -103,7 +103,7 @@ $ mysql -u root -p
 
 - Coloque a senha password
 ```bash
-enter password: password
+enter password: root
 ```
 
 Abrirá o terminal do mysql
@@ -112,7 +112,7 @@ mysql>
 ```
 Agora execute os comando abaixo
 ```bash
-mysql> ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'password';
+mysql> ALTER USER 'root' IDENTIFIED WITH mysql_native_password BY 'root';
 ```
 
 Atualize os privilégios de usuário
@@ -139,10 +139,11 @@ $ http://localhost:8080
 ````bash
 $ http://localhost:8080/swagger-ui/index.html#/
 ````
+> ## EXECUTAR APLICAÇÃO VIA IDE
 
-Com a base de dados ativa, inicializar o projeto:
+Clone realizado, com a base de dados ativa, inicializar o projeto:
 
-- Na raíz do projeto, executar a aplicação com o ambiente desejado (dev/prod)
+- Na raíz do projeto, em um terminal, executar a aplicação com o ambiente desejado (dev/prod)
 ```bash
 $ mvn spring-boot:run -P prod
 ```
@@ -153,13 +154,12 @@ $ .\mvnw spring-boot:run -P prod
 _``PS: Em caso de execução da aplicação em ambiente dev, os dados serão salvos em memória (H2)``_
 
 # API Endpoints
-A página poderá ser acessada em [http://localhost:8080](http://localhost:8080)
 
-Ou se preferir, você pode acessar a API via [SWAGGER](http://localhost:8080/swagger-ui/index.html) como client HTTP
+Você pode acessar a API via [SWAGGER](http://localhost:8080/swagger-ui/index.html) como client HTTP
 
 - Cadastrar uma Pessoa [[POST]]()
 ```bash
-$ http POST :8080/addPessoaForm nome="Nome" cpf="123.456.789-00" dataNascimento="01/01/2000" email="email@email.com"
+$ http POST :8080/api/save nome="Nome" cpf="123.456.789-00" dataNascimento="01/01/2000" email="email@email.com"
 {
   "nome": "nome",
   "cpf": "123.456.789-00",
@@ -170,7 +170,7 @@ $ http POST :8080/addPessoaForm nome="Nome" cpf="123.456.789-00" dataNascimento=
 
 - Listar Pessoas Cadastradas [[GET]]()
 ```bash
-$ http GET :8080/list
+$ http GET :8080/api/list
 
 [
  {
@@ -203,9 +203,24 @@ $ http GET :8080/api/find?nome=
 ]
 ```
 
+- Encontrar Pessoa por ID [[GET]]()
+
+```bash
+$ http GET :8080/api/search/{id}
+
+[
+  {
+    "nome": "nome",
+    "cpf": "123.456.789-00",
+    "dataNascimento": "01/01/2000",
+    "email": "email@email.com"
+  }
+]
+```
+
 - Atualizar Cadastro de uma Pessoa [[PUT]]()
 ```bash
-$ http PUT :8080/showUpdateForm?id=
+$ http PUT :8080/api/update/{id}
 
   {
     "nome": "nome update",
@@ -214,6 +229,13 @@ $ http PUT :8080/showUpdateForm?id=
     "email": "email@email.com"
   }
 ```
+
+- Excluir Cadastro de uma Pessoa [[DELETE]]()
+```bash
+$ http DELETE :8080/api/delete/{id}
+[NO_CONTENT]
+```
+
 > ## Teste de Unidade
 _Os teste de unidade podem ser executados para verificação de cobertura da aplicação_
 
