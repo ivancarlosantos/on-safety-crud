@@ -46,14 +46,14 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Application Clean Install
+      - name: Build Application Clean Install
         run: mvn clean install -DskipTests -P test
 
       - name: Application Test
         run: mvn -B package --file pom.xml -P test
 
-      - name: Docker Registry Application
-        run: mvn -B package --file pom.xml -P test
+      - name: Docker Registry Application files
+        run: ls -lha
 
       - name: Login to Docker Hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -61,10 +61,10 @@ jobs:
       - name: Build Docker Image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/crud .
 
-      - name: Publish Docker image
+      - name: Publish Docker Image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/crud
 
       - name: Create Pull Request
-        run: gh pr create -B master -H test --title 'Pull Request test into master' --body 'Pull Request realizado para merge com a branch principal [master]'
+        run: gh pr create -B master -H test --title 'Pull Request test into master' --body '[Pull Request Realizado] Para Merge com a Branch Principal [master]'
         env:
           GITHUB_TOKEN: ${{ secrets.GH_SECRET_KEY }}
