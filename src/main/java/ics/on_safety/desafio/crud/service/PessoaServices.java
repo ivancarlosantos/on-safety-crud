@@ -32,7 +32,7 @@ public class PessoaServices {
                 .email(dto.email())
                 .build();
 
-        if (findByPessoa(dto) != null) {
+        if (findByPessoaPorCPF(dto) != null) {
             throw new DataViolationException("[PESSOA/CPF JÁ CADASTRADO]");
         }
 
@@ -109,8 +109,8 @@ public class PessoaServices {
         return model;
     }
 
-    private PessoaDTO findByPessoa(PessoaDTO dto) {
-        Pessoa p = repository.findByPessoa(dto.cpf());
+    private PessoaDTO findByPessoaPorCPF(PessoaDTO dto) {
+        Pessoa p = repository.findByPessoaPorCPF(dto.cpf());
         if (p != null) {
             return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail());
         }

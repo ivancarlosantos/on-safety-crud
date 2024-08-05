@@ -1,6 +1,7 @@
 package ics.on_safety.desafio.crud.servicetest;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.exception.DataViolationException;
 import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
 import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
@@ -40,22 +41,22 @@ public class PessoaServiceTest {
     private PessoaDTO pessoaDTO;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse("01/01/2000", dtf);
 
         pessoa = Pessoa.builder()
                 .id(1L)
-                .nome("Nome Teste")
+                .nome("Nome Test")
                 .cpf("012.696.448-31")
                 .dataNascimento(ld)
                 .email("email@email.com")
                 .build();
 
         pessoaDTO = new PessoaDTO(
-                "Nome Teste",
-                "459.827.228-71",
+                "Nome Test",
+                "012.696.448-31",
                 "01/01/2000",
                 "email@email.com"
         );
@@ -81,7 +82,7 @@ public class PessoaServiceTest {
     }
 
     @Test
-    public void testPersist() throws ParseException {
+    void testPersist() throws ParseException {
 
         when(repository.save(any(Pessoa.class))).thenReturn(pessoa);
 
@@ -98,7 +99,7 @@ public class PessoaServiceTest {
         assertThat(dto.dataNascimento()).isNotNull();
         assertThat(dto.email()).isNotNull();
 
-        verify(repository, times(1)).findByPessoa(dto.cpf());
+        verify(repository, times(1)).findByPessoaPorCPF(dto.cpf());
 
         verify(repository, times(1)).save(any(Pessoa.class));
 
@@ -106,7 +107,26 @@ public class PessoaServiceTest {
     }
 
     @Test
-    public void testFindByID() {
+    void testPersistThrowsDataViolationException() {
+
+        Pessoa pessoa = Pessoa.builder()
+                .nome(pessoaDTO.nome())
+                .cpf(pessoaDTO.cpf())
+                .dataNascimento(LocalDate.parse(pessoaDTO.dataNascimento(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                .email(pessoaDTO.email())
+                .build();
+
+        when(repository.findByPessoaPorCPF(pessoaDTO.cpf())).thenReturn(pessoa);
+
+        assertThrows(DataViolationException.class, () -> service.persist(pessoaDTO));
+
+        verify(repository, never()).save(any(Pessoa.class));
+
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testFindByID() {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(pessoa));
 
@@ -131,17 +151,24 @@ public class PessoaServiceTest {
     @Test
     void testFindWithParameterIDError() {
         String id = "A";
+
         assertThrows(ValidateParameterException.class, () -> service.findByID(id));
+
+        verifyNoMoreInteractions(repository);
     }
 
     @Test
     void testPessoaNotFound() {
+
         String id = "100";
+
         assertThrows(RegraDeNegocioException.class, () -> service.findByID(id));
+
+        verify(repository, times(1)).findById(Long.parseLong(id));
     }
 
     @Test
-    public void testList() {
+    void testList() {
         when(repository.findAll()).thenReturn(Collections.singletonList(pessoa));
 
         List<PessoaDTO> result = service.list();
@@ -159,7 +186,7 @@ public class PessoaServiceTest {
     }
 
     @Test
-    public void testFindPessoaByNome() {
+    void testFindPessoaByNome() {
         when(repository.findPessoaByNome(anyString())).thenReturn(Collections.singletonList(pessoa));
 
         List<PessoaDTO> result = service.findPessoaByNome(pessoaDTO.nome());
@@ -182,7 +209,7 @@ public class PessoaServiceTest {
     }
 
     @Test
-    public void testUpdate() {
+    void testUpdate() {
 
         when(repository.findById(pessoa.getId())).thenReturn(Optional.of(pessoa));
         when(repository.save(any(Pessoa.class))).thenReturn(pessoa);
@@ -201,7 +228,16 @@ public class PessoaServiceTest {
     }
 
     @Test
-    public void testDelete() {
+    void testUpdateThrowsRegraDeNegocioException() {
+        String id = "1";
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(RegraDeNegocioException.class, () -> service.update(id, pessoaDTO));
+        verify(repository, never()).save(any(Pessoa.class));
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testDelete() {
 
         Long id = ValidateParameter.validate(pessoa.getId().toString());
 
@@ -213,6 +249,15 @@ public class PessoaServiceTest {
 
         verify(repository, times(1)).deleteById(id);
 
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testDeleteThrowsRegraDeNegocioException() {
+        String id = "1";
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(RegraDeNegocioException.class, () -> service.delete(id));
+        verify(repository, never()).deleteById(anyLong());
         verifyNoMoreInteractions(repository);
     }
 }

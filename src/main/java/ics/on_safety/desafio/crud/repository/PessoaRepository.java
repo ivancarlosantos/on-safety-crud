@@ -15,5 +15,5 @@ public interface PessoaRepository extends JpaRepository<Pessoa, Long> {
     List<Pessoa> findPessoaByNome(@Param("nome") String nome);
 
     @Query(value = "SELECT u FROM Pessoa u WHERE u.cpf=:cpf")
-    Pessoa findByPessoa(@Param("cpf") String cpf);
+    Pessoa findByPessoaPorCPF(@Param("cpf") String cpf);
 }

@@ -4,8 +4,6 @@ import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 
 public class ValidateParameter {
 
-    private ValidateParameter() {}
-
     public static Long validate(String value) {
         try {
             return Long.parseLong(value);
