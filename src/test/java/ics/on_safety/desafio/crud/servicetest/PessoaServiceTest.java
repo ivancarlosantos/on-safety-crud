@@ -1,9 +1,11 @@
 package ics.on_safety.desafio.crud.servicetest;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.dto.PessoaResponse;
 import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
 import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
+import ics.on_safety.desafio.crud.model.Endereco;
 import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
 import ics.on_safety.desafio.crud.service.PessoaServices;
@@ -14,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -32,6 +36,9 @@ public class PessoaServiceTest {
     @InjectMocks
     private PessoaServices service;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Mock
     private PessoaRepository repository;
 
@@ -44,6 +51,7 @@ public class PessoaServiceTest {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse("01/01/2000", dtf);
+        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/13063580/json/", Endereco.class);
 
         pessoa = Pessoa.builder()
                 .id(1L)
@@ -51,13 +59,15 @@ public class PessoaServiceTest {
                 .cpf("012.696.448-31")
                 .dataNascimento(ld)
                 .email("email@email.com")
+                .endereco(endereco)
                 .build();
 
         pessoaDTO = new PessoaDTO(
                 "Nome Teste",
                 "459.827.228-71",
                 "01/01/2000",
-                "email@email.com"
+                "email@email.com",
+                "13063580"
         );
     }
 
@@ -68,8 +78,9 @@ public class PessoaServiceTest {
         String cpf = FakeFactory.pessoa().getCpf();
         LocalDate nasc = FakeFactory.pessoa().getDataNascimento();
         String email = FakeFactory.pessoa().getEmail();
-
-        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email);
+        String cep = "13063580";
+        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + cep + "/json/", Endereco.class);
+        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email, endereco);
 
         repository.save(pessoa);
 
@@ -85,20 +96,20 @@ public class PessoaServiceTest {
 
         when(repository.save(any(Pessoa.class))).thenReturn(pessoa);
 
-        PessoaDTO dto = service.persist(pessoaDTO);
+        PessoaResponse response = service.persist(pessoaDTO);
 
-        assertNotNull(dto);
-        assertEquals(pessoaDTO.nome(), dto.nome());
-        assertEquals(pessoaDTO.cpf(), dto.cpf());
-        assertEquals("2000-01-01", dto.dataNascimento());
-        assertEquals(pessoaDTO.email(), dto.email());
+        assertNotNull(response);
+        assertEquals(pessoaDTO.nome(), response.nome());
+        assertEquals(pessoaDTO.cpf(), response.cpf());
+        assertEquals("2000-01-01", response.dataNascimento());
+        assertEquals(pessoaDTO.email(), response.email());
 
-        assertThat(dto.nome()).isNotNull();
-        assertThat(dto.cpf()).isNotNull();
-        assertThat(dto.dataNascimento()).isNotNull();
-        assertThat(dto.email()).isNotNull();
+        assertThat(response.nome()).isNotNull();
+        assertThat(response.cpf()).isNotNull();
+        assertThat(response.dataNascimento()).isNotNull();
+        assertThat(response.email()).isNotNull();
 
-        verify(repository, times(1)).findByPessoa(dto.cpf());
+        verify(repository, times(1)).findByPessoa(response.cpf());
 
         verify(repository, times(1)).save(any(Pessoa.class));
 

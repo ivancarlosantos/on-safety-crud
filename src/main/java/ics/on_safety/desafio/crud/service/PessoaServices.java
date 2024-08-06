@@ -1,13 +1,16 @@
 package ics.on_safety.desafio.crud.service;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.dto.PessoaResponse;
 import ics.on_safety.desafio.crud.exception.DataViolationException;
 import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
+import ics.on_safety.desafio.crud.model.Endereco;
 import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
 import ics.on_safety.desafio.crud.utils.ValidateParameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,16 +23,20 @@ public class PessoaServices {
 
     private final PessoaRepository repository;
 
-    public PessoaDTO persist(PessoaDTO dto) {
+    private final RestTemplate restTemplate;
+
+    public PessoaResponse persist(PessoaDTO dto) {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
 
         Pessoa p = Pessoa.builder()
                 .nome(dto.nome())
                 .cpf(dto.cpf())
                 .dataNascimento(ld)
                 .email(dto.email())
+                .endereco(endereco)
                 .build();
 
         if (findByPessoa(dto) != null) {
@@ -38,14 +45,14 @@ public class PessoaServices {
 
         repository.save(p);
 
-        return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail());
+        return new PessoaResponse(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), endereco);
     }
 
     public PessoaDTO findByID(String value) {
         Long id = ValidateParameter.validate(value);
         return repository
                 .findById(id)
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail()))
+                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString()))
                 .orElseThrow(() -> new RegraDeNegocioException("Pessoa Não Encontrada"));
     }
 
@@ -53,7 +60,7 @@ public class PessoaServices {
         return repository
                 .findAll()
                 .stream()
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail()))
+                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString()))
                 .toList();
     }
 
@@ -62,7 +69,7 @@ public class PessoaServices {
         return repository
                 .findPessoaByNome(nome)
                 .stream()
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail()))
+                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString()))
                 .toList();
     }
 
@@ -70,16 +77,18 @@ public class PessoaServices {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
 
         Pessoa pessoa = findID(id);
         pessoa.setNome(dto.nome());
         pessoa.setCpf(dto.cpf());
         pessoa.setDataNascimento(ld);
         pessoa.setEmail(dto.email());
+        pessoa.setEndereco(endereco);
 
         repository.save(pessoa);
 
-        return new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail());
+        return new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail(), pessoa.getEndereco().toString());
     }
 
     public String delete(String value) {
@@ -111,8 +120,9 @@ public class PessoaServices {
 
     private PessoaDTO findByPessoa(PessoaDTO dto) {
         Pessoa p = repository.findByPessoa(dto.cpf());
+        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
         if (p != null) {
-            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail());
+            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString());
         }
         return null;
     }
