@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.web.client.RestTemplate;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -34,6 +35,9 @@ class CrudOnSafetyApplicationConfigurationTests {
 
     @Autowired
     PessoaRepository repository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @Container
     static PostgreSQLContainer<?> container = new PostgreSQLContainer<>(
@@ -75,8 +79,7 @@ class CrudOnSafetyApplicationConfigurationTests {
         String cpf = FakeFactory.pessoa().getCpf();
         LocalDate nasc = FakeFactory.pessoa().getDataNascimento();
         String email = FakeFactory.pessoa().getEmail();
-
-        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email);
+        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email, FakeFactory.pessoa().getEndereco());
 
         repository.save(pessoa);
 

@@ -1,6 +1,7 @@
 package ics.on_safety.desafio.crud.api;
 
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
+import ics.on_safety.desafio.crud.dto.PessoaResponse;
 import ics.on_safety.desafio.crud.service.PessoaServices;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class PessoaController {
     private final PessoaServices services;
 
     @PostMapping(path = "/save")
-    public ResponseEntity<PessoaDTO> persist(@RequestBody @Valid PessoaDTO dto) throws ParseException {
+    public ResponseEntity<PessoaResponse> persist(@RequestBody @Valid PessoaDTO dto) throws ParseException {
         return ResponseEntity.status(HttpStatus.CREATED).body(services.persist(dto));
     }
 
@@ -44,7 +45,7 @@ public class PessoaController {
     }
 
     @DeleteMapping(path = "/delete/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") String id){
+    public ResponseEntity<String> delete(@PathVariable("id") String id) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(services.delete(id));
     }
 }

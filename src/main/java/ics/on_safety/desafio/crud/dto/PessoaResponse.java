@@ -1,6 +1,8 @@
 package ics.on_safety.desafio.crud.dto;
 
-public record PessoaDTO(
+import ics.on_safety.desafio.crud.model.Endereco;
+
+public record PessoaResponse(
 
         String nome,
 
@@ -10,5 +12,4 @@ public record PessoaDTO(
 
         String email,
 
-        String cep) {
-}
+        Endereco endereco){}
