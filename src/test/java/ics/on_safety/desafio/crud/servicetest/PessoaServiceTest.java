@@ -87,7 +87,7 @@ public class PessoaServiceTest {
         assertEquals(cpf, pessoa.getCpf());
         assertEquals(nasc, pessoa.getDataNascimento());
         assertEquals(email, pessoa.getEmail());
-
+        assertEquals(cep, "13063580");
     }
 
     @Test
