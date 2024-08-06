@@ -30,12 +30,12 @@ public class PessoaController {
     }
 
     @GetMapping(path = "/list")
-    public ResponseEntity<List<PessoaDTO>> list() {
+    public ResponseEntity<List<PessoaResponse>> list() {
         return ResponseEntity.status(HttpStatus.OK).body(services.list());
     }
 
     @GetMapping(path = "/search/{id}")
-    public ResponseEntity<PessoaDTO> findPessoaByID(@PathVariable("id") String id) {
+    public ResponseEntity<PessoaResponse> findPessoaByID(@PathVariable("id") String id) {
         return ResponseEntity.status(HttpStatus.FOUND).body(services.findByID(id));
     }
 

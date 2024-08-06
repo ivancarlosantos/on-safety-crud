@@ -48,19 +48,20 @@ public class PessoaServices {
         return new PessoaResponse(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), endereco);
     }
 
-    public PessoaDTO findByID(String value) {
+    public PessoaResponse findByID(String value) {
         Long id = ValidateParameter.validate(value);
         return repository
                 .findById(id)
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString()))
+                .map(p -> new PessoaResponse(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco()))
                 .orElseThrow(() -> new RegraDeNegocioException("Pessoa Não Encontrada"));
     }
 
-    public List<PessoaDTO> list() {
+    public List<PessoaResponse> list() {
+
         return repository
                 .findAll()
                 .stream()
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString()))
+                .map(p -> new PessoaResponse(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco()))
                 .toList();
     }
 
@@ -69,7 +70,7 @@ public class PessoaServices {
         return repository
                 .findPessoaByNome(nome)
                 .stream()
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString()))
+                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().getCep()))
                 .toList();
     }
 
@@ -88,7 +89,7 @@ public class PessoaServices {
 
         repository.save(pessoa);
 
-        return new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail(), pessoa.getEndereco().toString());
+        return new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail(), pessoa.getEndereco().getCep());
     }
 
     public String delete(String value) {
@@ -122,7 +123,7 @@ public class PessoaServices {
         Pessoa p = repository.findByPessoa(dto.cpf());
         Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
         if (p != null) {
-            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().toString());
+            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().getCep());
         }
         return null;
     }
