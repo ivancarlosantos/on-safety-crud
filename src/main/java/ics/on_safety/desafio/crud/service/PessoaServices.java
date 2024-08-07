@@ -9,8 +9,9 @@ import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
 import ics.on_safety.desafio.crud.utils.ValidateParameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -23,13 +24,19 @@ public class PessoaServices {
 
     private final PessoaRepository repository;
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
 
     public PessoaResponse persist(PessoaDTO dto) {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
-        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
+
+        Endereco endereco = restClient
+                .get()
+                .uri("https://viacep.com.br/ws/{cep}", dto.cep() + "/json/")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(Endereco.class);
 
         Pessoa p = Pessoa.builder()
                 .nome(dto.nome())
@@ -78,7 +85,12 @@ public class PessoaServices {
 
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
-        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
+
+        Endereco endereco = restClient
+                .get()
+                .uri("https://viacep.com.br/ws/{cep}", dto.cep() + "/json/")
+                .retrieve()
+                .body(Endereco.class);
 
         Pessoa pessoa = findID(id);
         pessoa.setNome(dto.nome());
@@ -121,9 +133,14 @@ public class PessoaServices {
 
     private PessoaDTO findByPessoa(PessoaDTO dto) {
         Pessoa p = repository.findByPessoa(dto.cpf());
-        Endereco endereco = restTemplate.getForObject("https://viacep.com.br/ws/" + dto.cep() + "/json/", Endereco.class);
+        Endereco endereco = restClient
+                .get()
+                .uri("https://viacep.com.br/ws/{cep}", dto.cep() + "/json/")
+                .retrieve()
+                .body(Endereco.class);
         if (p != null) {
-            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().getCep());
+            assert endereco != null;
+            return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), endereco.getCep());
         }
         return null;
     }
