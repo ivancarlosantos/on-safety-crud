@@ -6,16 +6,17 @@ import ics.on_safety.desafio.crud.factory.FakeFactory;
 import ics.on_safety.desafio.crud.model.Endereco;
 import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
+import ics.on_safety.desafio.crud.service.PessoaServices;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
@@ -24,9 +25,12 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 
 @Slf4j
@@ -39,6 +43,10 @@ class CrudOnSafetyApplicationConfigurationTests {
 
     @Autowired
     PessoaRepository repository;
+
+    @InjectMocks
+    private PessoaServices service;
+
 
     @Container
     static PostgreSQLContainer<?> container = new PostgreSQLContainer<>(
@@ -94,4 +102,11 @@ class CrudOnSafetyApplicationConfigurationTests {
         assertEquals(email, pessoa.getEmail());
         assertEquals(cep, pessoa.getEndereco().getCep());
     }
+
+    @Test
+    void testFindWithParameterIDError() {
+        String id = "A";
+        assertThrows(ValidateParameterException.class, () -> service.findByID(id));
+    }
+
 }
