@@ -166,6 +166,13 @@ public class PessoaServiceTest {
     }
 
     @Test
+    void testDeleteThrowsRegraDeNegocioException() {
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(RegraDeNegocioException.class, () -> service.delete("1"));
+    }
+
+    @Test
     public void testList() {
         when(repository.findAll()).thenReturn(Collections.singletonList(pessoa));
 
@@ -242,10 +249,4 @@ public class PessoaServiceTest {
         verifyNoMoreInteractions(repository);
     }
 
-    @Test
-    void testDeleteThrowsRegraDeNegocioException() {
-        when(repository.findById(anyLong())).thenReturn(Optional.empty());
-
-        assertThrows(RegraDeNegocioException.class, () -> service.delete("1"));
-    }
 }
