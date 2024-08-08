@@ -15,7 +15,7 @@ public class FakeFactory {
 
         return new Pessoa(
                 faker.number().randomNumber(),
-                faker.gameOfThrones().character(),
+                faker.dragonBall().character(),
                 "459.827.228-71",
                 LocalDate.of(2000, 1, 1),
                 faker.internet().emailAddress(),
