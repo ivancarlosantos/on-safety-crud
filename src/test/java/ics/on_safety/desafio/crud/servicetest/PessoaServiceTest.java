@@ -99,6 +99,7 @@ public class PessoaServiceTest {
         assertEquals(cpf, pessoa.getCpf());
         assertEquals(nasc, pessoa.getDataNascimento());
         assertEquals(email, pessoa.getEmail());
+
         assertEquals("13063-580", pessoa.getEndereco().getCep());
     }
 
