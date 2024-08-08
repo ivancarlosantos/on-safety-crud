@@ -20,12 +20,14 @@ public class Pessoa implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotEmpty(message = "O nome não deve ser null e/ou vazio")
     @NotBlank(message = "O nome não deve ser null e/ou vazio")
     @NotNull(message = "O nome não deve ser null e/ou vazio")
     private String nome;
 
     @Pattern(regexp = "\\d{3}\\.?\\d{3}\\.?\\d{3}-?\\d{2}")
     @CPF
+    @NotEmpty(message = "O CPF não deve ser null e/ou vazio")
     @NotBlank(message = "O CPF não deve ser null e/ou vazio")
     @NotNull(message = "O CPF não deve ser null e/ou vazio")
     private String cpf;
@@ -34,7 +36,8 @@ public class Pessoa implements Serializable {
     private LocalDate dataNascimento;
 
     @NotBlank(message = "O e-mail não deve ser null e/ou vazio")
-    @NotEmpty
+    @NotNull(message = "O e-mail não deve ser null e/ou vazio")
+    @NotEmpty(message = "O e-mail não deve ser null e/ou vazio")
     @Email
     private String email;
 
