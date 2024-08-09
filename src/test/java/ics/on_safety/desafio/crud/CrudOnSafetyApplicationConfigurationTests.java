@@ -1,6 +1,5 @@
 package ics.on_safety.desafio.crud;
 
-import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
 import ics.on_safety.desafio.crud.exception.ValidateParameterException;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
 import ics.on_safety.desafio.crud.model.Endereco;
@@ -24,13 +23,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import java.time.LocalDate;
-import java.util.Optional;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
 
 
 @Slf4j
@@ -86,19 +82,19 @@ class CrudOnSafetyApplicationConfigurationTests {
 
         String nome = FakeFactory.pessoa().getNome();
         String cpf = FakeFactory.pessoa().getCpf();
-        LocalDate nasc = FakeFactory.pessoa().getDataNascimento();
+        Date nascimento = FakeFactory.pessoa().getDataNascimento();
         String email = FakeFactory.pessoa().getEmail();
         String cep = "13063-580";
         Endereco endereco = new Endereco(cep,"Rua Martín Luther King Jr.","Jardim Eulina","Campinas", "SP","19");
 
-        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email, endereco);
+        Pessoa pessoa = new Pessoa(null, nome, cpf, nascimento, email, endereco);
 
         repository.save(pessoa);
 
         assertNotNull(pessoa);
         assertEquals(nome, pessoa.getNome());
         assertEquals(cpf, pessoa.getCpf());
-        assertEquals(nasc, pessoa.getDataNascimento());
+        assertEquals(nascimento, pessoa.getDataNascimento());
         assertEquals(email, pessoa.getEmail());
         assertEquals(cep, pessoa.getEndereco().getCep());
     }

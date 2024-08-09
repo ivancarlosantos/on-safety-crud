@@ -13,8 +13,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +29,10 @@ public class PessoaServices {
 
     private final RestClient restClient;
 
-    public PessoaResponse persist(PessoaDTO dto) {
+    public PessoaResponse persist(PessoaDTO dto) throws ParseException {
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date nascimento = sdf.parse(dto.dataNascimento());
 
         Endereco endereco = restClient
                 .get()
@@ -41,7 +44,7 @@ public class PessoaServices {
         Pessoa p = Pessoa.builder()
                 .nome(dto.nome())
                 .cpf(dto.cpf())
-                .dataNascimento(ld)
+                .dataNascimento(nascimento)
                 .email(dto.email())
                 .endereco(endereco)
                 .build();
@@ -72,19 +75,19 @@ public class PessoaServices {
                 .toList();
     }
 
-    public List<PessoaDTO> findPessoaByNome(String nome) {
+    public List<PessoaResponse> findPessoaByNome(String nome) {
 
         return repository
                 .findPessoaByNome(nome)
                 .stream()
-                .map(p -> new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco().getCep()))
+                .map(p -> new PessoaResponse(p.getNome(), p.getCpf(), p.getDataNascimento().toString(), p.getEmail(), p.getEndereco()))
                 .toList();
     }
 
-    public PessoaDTO update(String id, PessoaDTO dto) {
+    public PessoaResponse update(String id, PessoaDTO dto) throws ParseException {
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.parse(dto.dataNascimento(), dtf);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date nascimento = sdf.parse(dto.dataNascimento());
 
         Endereco endereco = restClient
                 .get()
@@ -95,13 +98,13 @@ public class PessoaServices {
         Pessoa pessoa = findID(id);
         pessoa.setNome(dto.nome());
         pessoa.setCpf(dto.cpf());
-        pessoa.setDataNascimento(ld);
+        pessoa.setDataNascimento(nascimento);
         pessoa.setEmail(dto.email());
         pessoa.setEndereco(endereco);
 
         repository.save(pessoa);
 
-        return new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail(), pessoa.getEndereco().getCep());
+        return new PessoaResponse(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail(), pessoa.getEndereco());
     }
 
     public String delete(String value) {
