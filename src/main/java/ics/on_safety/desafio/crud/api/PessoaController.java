@@ -25,7 +25,7 @@ public class PessoaController {
     }
 
     @PutMapping(path = "/update/{id}")
-    public ResponseEntity<PessoaDTO> update(@PathVariable String id, @Valid @RequestBody PessoaDTO dto) {
+    public ResponseEntity<PessoaResponse> update(@PathVariable String id, @Valid @RequestBody PessoaDTO dto) throws ParseException {
         return ResponseEntity.status(HttpStatus.OK).body(services.update(id, dto));
     }
 
@@ -40,7 +40,7 @@ public class PessoaController {
     }
 
     @GetMapping(path = "/find")
-    public ResponseEntity<List<PessoaDTO>> findPessoa(@RequestParam(value = "nome") String nome) {
+    public ResponseEntity<List<PessoaResponse>> findPessoa(@RequestParam(value = "nome") String nome) {
         return ResponseEntity.status(HttpStatus.FOUND).body(services.findPessoaByNome(nome));
     }
 

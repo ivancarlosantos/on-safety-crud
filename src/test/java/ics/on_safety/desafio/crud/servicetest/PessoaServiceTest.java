@@ -19,9 +19,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,10 +51,10 @@ public class PessoaServiceTest {
     private PessoaDTO pessoaDTO;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws ParseException {
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.parse("01/01/2000", dtf);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date nascimento = sdf.parse("01/01/2000");
         this.restClient = RestClient.builder().build();
 
         endereco = new Endereco("13063580","Rua Martín Luther King Junior", "Jardim Eulina", "Campinas", "SP", "19");
@@ -60,7 +63,7 @@ public class PessoaServiceTest {
                 .id(1L)
                 .nome("Nome Teste")
                 .cpf("012.696.448-31")
-                .dataNascimento(ld)
+                .dataNascimento(nascimento)
                 .email("email@email.com")
                 .endereco(endereco)
                 .build();
@@ -79,7 +82,7 @@ public class PessoaServiceTest {
 
         String nome = FakeFactory.pessoa().getNome();
         String cpf = FakeFactory.pessoa().getCpf();
-        LocalDate nasc = FakeFactory.pessoa().getDataNascimento();
+        Date nascimento = FakeFactory.pessoa().getDataNascimento();
         String email = FakeFactory.pessoa().getEmail();
         String cep = "13063580";
 
@@ -90,16 +93,15 @@ public class PessoaServiceTest {
                 .retrieve()
                 .body(Endereco.class);
 
-        Pessoa pessoa = new Pessoa(null, nome, cpf, nasc, email, endereco);
+        Pessoa pessoa = new Pessoa(null, nome, cpf, nascimento, email, endereco);
 
         repository.save(pessoa);
 
         assertNotNull(pessoa);
         assertEquals(nome, pessoa.getNome());
         assertEquals(cpf, pessoa.getCpf());
-        assertEquals(nasc, pessoa.getDataNascimento());
+        assertEquals(nascimento, pessoa.getDataNascimento());
         assertEquals(email, pessoa.getEmail());
-
         assertEquals("13063-580", pessoa.getEndereco().getCep());
     }
 

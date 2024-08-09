@@ -21,9 +21,11 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(PessoaController.class)
@@ -38,7 +40,7 @@ public class PessoaControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-/*
+
     @Test
     void persist() throws Exception {
 
@@ -47,7 +49,7 @@ public class PessoaControllerTest {
 
         when(service.persist(dto)).thenReturn(res);
 
-        String response = mapper.writeValueAsString(res);
+        String response = mapper.writeValueAsString(dto);
 
         mockMvc.perform(post("/api/save")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,14 +62,15 @@ public class PessoaControllerTest {
                 .andExpect(jsonPath("$.dataNascimento").value(res.dataNascimento()))
                 .andExpect(jsonPath("$.email").value(res.email()))
                 .andDo(MockMvcResultHandlers.print());
-    }*/
+    }
 
     @Test
     void testUpdate() throws Exception {
 
-        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco().toString());
+        PessoaResponse resp = new PessoaResponse(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco());
+        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco().getCep());
 
-        when(service.update("1", dto)).thenReturn(dto);
+        when(service.update("1", dto)).thenReturn(resp);
 
         String response = mapper.writeValueAsString(dto);
 
@@ -78,10 +81,10 @@ public class PessoaControllerTest {
                         .characterEncoding("UTF-8")
                         .content(response))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nome").value(dto.nome()))
-                .andExpect(jsonPath("$.cpf").value(dto.cpf()))
-                .andExpect(jsonPath("$.dataNascimento").value(dto.dataNascimento()))
-                .andExpect(jsonPath("$.email").value(dto.email()))
+                .andExpect(jsonPath("$.nome").value(resp.nome()))
+                .andExpect(jsonPath("$.cpf").value(resp.cpf()))
+                .andExpect(jsonPath("$.dataNascimento").value(resp.dataNascimento()))
+                .andExpect(jsonPath("$.email").value(resp.email()))
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -106,7 +109,7 @@ public class PessoaControllerTest {
 
         when(service.list()).thenReturn(List.of(dto1, dto2));
 
-        mockMvc.perform(get("/api/list")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8"))
                 .andExpect(status().isOk())
@@ -150,17 +153,17 @@ public class PessoaControllerTest {
     @Test
     void testFindPessoa() throws Exception {
 
-        PessoaDTO dto = new PessoaDTO(
+        PessoaResponse dto = new PessoaResponse(
                 FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
                 "01/01/2000",
                 FakeFactory.pessoa().getEmail(),
-                FakeFactory.pessoa().getEndereco().toString()
+                FakeFactory.pessoa().getEndereco()
         );
 
         when(service.findPessoaByNome(dto.nome())).thenReturn(List.of(dto));
 
-        mockMvc.perform(get("/api/find")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/find")
                         .param("nome", dto.nome()))
                 .andExpect(status().isFound())
                 .andExpect(jsonPath("$[0].nome", is(dto.nome())))

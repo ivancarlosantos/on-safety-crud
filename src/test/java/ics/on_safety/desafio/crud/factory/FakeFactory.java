@@ -5,6 +5,7 @@ import ics.on_safety.desafio.crud.model.Endereco;
 import ics.on_safety.desafio.crud.model.Pessoa;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class FakeFactory {
 
@@ -17,7 +18,7 @@ public class FakeFactory {
                 faker.number().randomNumber(),
                 faker.dragonBall().character(),
                 "459.827.228-71",
-                LocalDate.of(2000, 1, 1),
+                new Date("01/01/2000"),
                 faker.internet().emailAddress(),
                 endereco);
     }
