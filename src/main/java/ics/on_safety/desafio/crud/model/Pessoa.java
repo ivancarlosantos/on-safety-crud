@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -33,7 +34,7 @@ public class Pessoa implements Serializable {
     private String cpf;
 
     @NotNull(message = "Inserir sua data de nascimento")
-    private LocalDate dataNascimento;
+    private Date dataNascimento;
 
     @NotBlank(message = "O e-mail não deve ser null e/ou vazio")
     @NotNull(message = "O e-mail não deve ser null e/ou vazio")
