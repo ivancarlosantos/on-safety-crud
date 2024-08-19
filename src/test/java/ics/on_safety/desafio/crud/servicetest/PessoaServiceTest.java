@@ -1,5 +1,6 @@
 package ics.on_safety.desafio.crud.servicetest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
 import ics.on_safety.desafio.crud.dto.PessoaResponse;
 import ics.on_safety.desafio.crud.exception.RegraDeNegocioException;
@@ -10,19 +11,18 @@ import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
 import ics.on_safety.desafio.crud.service.PessoaServices;
 import ics.on_safety.desafio.crud.utils.ValidateParameter;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestClient;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -44,6 +44,9 @@ public class PessoaServiceTest {
     @Mock
     private PessoaRepository repository;
 
+    @Autowired
+    private ObjectMapper mapper;
+
     private Endereco endereco;
 
     private Pessoa pessoa;
@@ -57,7 +60,7 @@ public class PessoaServiceTest {
         Date nascimento = sdf.parse("01/01/2000");
         this.restClient = RestClient.builder().build();
 
-        endereco = new Endereco("13063580","Rua Martín Luther King Junior", "Jardim Eulina", "Campinas", "SP", "19");
+        endereco = new Endereco("13063580", "Rua Martín Luther King Junior", "Jardim Eulina", "Campinas", "SP", "19");
 
         pessoa = Pessoa.builder()
                 .id(1L)
@@ -84,48 +87,51 @@ public class PessoaServiceTest {
         String cpf = FakeFactory.pessoa().getCpf();
         Date nascimento = FakeFactory.pessoa().getDataNascimento();
         String email = FakeFactory.pessoa().getEmail();
-        String cep = "13063580";
-
-        endereco = restClient
-                .get()
-                .uri("https://viacep.com.br/ws/{cep}", cep + "/json/")
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .body(Endereco.class);
+        String cep = "13063-580";
 
         Pessoa pessoa = new Pessoa(null, nome, cpf, nascimento, email, endereco);
+        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail(), pessoa.getEndereco().getCep());
 
         repository.save(pessoa);
 
         assertNotNull(pessoa);
+        assertNotNull(dto);
         assertEquals(nome, pessoa.getNome());
         assertEquals(cpf, pessoa.getCpf());
         assertEquals(nascimento, pessoa.getDataNascimento());
         assertEquals(email, pessoa.getEmail());
-        assertEquals("13063-580", pessoa.getEndereco().getCep());
+        assertEquals("13063-580", cep);
+
+        verify(repository).save(pessoa);
+        verifyNoMoreInteractions(repository);
     }
 
     /*@Test
-    public void testPersist() {
+    public void testPersist() throws JsonProcessingException, ParseException {
 
-        when(repository.save(any(Pessoa.class))).thenReturn(pessoa);
+        PessoaResponse resp = new PessoaResponse(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco());
+        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco().getCep());
 
-        PessoaResponse response = service.persist(pessoaDTO);
+        when(service.update("1",dto)).thenReturn(resp);
+
+        String response = mapper.writeValueAsString(dto);
+
+        System.out.println(response);
 
         assertNotNull(response);
-        assertEquals(pessoaDTO.nome(), response.nome());
-        assertEquals(pessoaDTO.cpf(), response.cpf());
-        assertEquals("2000-01-01", response.dataNascimento());
-        assertEquals(pessoaDTO.email(), response.email());
-        assertEquals(pessoaDTO.cep(), response.endereco().getCep());
+        assertEquals(pessoaDTO.nome(), resp.nome());
+        assertEquals(pessoaDTO.cpf(), resp.cpf());
+        assertEquals("2000-01-01", resp.dataNascimento());
+        assertEquals(pessoaDTO.email(), resp.email());
+        assertEquals(pessoaDTO.cep(), resp.endereco().getCep());
 
-        assertThat(response.nome()).isNotNull();
-        assertThat(response.cpf()).isNotNull();
-        assertThat(response.dataNascimento()).isNotNull();
-        assertThat(response.email()).isNotNull();
-        assertThat(response.endereco().getCep()).isNotNull();
+        assertThat(resp.nome()).isNotNull();
+        assertThat(resp.cpf()).isNotNull();
+        assertThat(resp.dataNascimento()).isNotNull();
+        assertThat(resp.email()).isNotNull();
+        assertThat(resp.endereco()).isNotNull();
 
-        verify(repository, times(1)).findByPessoa(response.cpf());
+        verify(repository, times(1)).findByPessoa(resp.cpf());
 
         verify(repository, times(1)).save(any(Pessoa.class));
 
