@@ -4,7 +4,6 @@ import com.github.javafaker.Faker;
 import ics.on_safety.desafio.crud.model.Endereco;
 import ics.on_safety.desafio.crud.model.Pessoa;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 public class FakeFactory {
@@ -16,7 +15,7 @@ public class FakeFactory {
 
         return new Pessoa(
                 faker.number().randomNumber(),
-                faker.dragonBall().character(),
+                faker.backToTheFuture().character(),
                 "459.827.228-71",
                 new Date("01/01/2000"),
                 faker.internet().emailAddress(),
