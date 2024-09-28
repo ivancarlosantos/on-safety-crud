@@ -1,9 +1,5 @@
 package ics.on_safety.desafio.crud;
 
-import ics.on_safety.desafio.crud.exception.ValidateParameterException;
-import ics.on_safety.desafio.crud.factory.FakeFactory;
-import ics.on_safety.desafio.crud.model.Endereco;
-import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.repository.PessoaRepository;
 import ics.on_safety.desafio.crud.service.PessoaServices;
 import io.restassured.RestAssured;

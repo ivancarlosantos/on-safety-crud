@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +26,7 @@ class PessoaRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
-    void save(){
+    void save() throws ParseException {
         Pessoa p = created();
         Pessoa save = this.repository.save(p);
 
@@ -35,26 +36,24 @@ class PessoaRepositoryTest {
     }
 
     @Test
-    void findPessoaByNome() {
+    void findPessoaByNome() throws ParseException {
         List<Pessoa> p = repository.findPessoaByNome(created().getNome());
 
         assertThat(p).isNotNull();
     }
 
     @Test
-    void findByPessoa() {
+    void findByPessoa() throws ParseException {
         List<Pessoa> p = repository.findPessoaByNome(created().getNome());
         assertThat(p).isNotNull();
     }
 
-    private static Pessoa created() {
-        return Pessoa
-                .builder()
-                .nome(FakeFactory.pessoa().getNome())
-                .cpf(FakeFactory.pessoa().getCpf())
-                .dataNascimento(FakeFactory.pessoa().getDataNascimento())
-                .email(FakeFactory.pessoa().getEmail())
-                .endereco(FakeFactory.pessoa().getEndereco())
-                .build();
+    private static Pessoa created() throws ParseException {
+        return new Pessoa(
+                FakeFactory.pessoa().getId(),
+                FakeFactory.pessoa().getNome(),
+                FakeFactory.pessoa().getCpf(),
+                FakeFactory.pessoa().getDataNascimento(),
+                FakeFactory.pessoa().getEmail());
     }
 }

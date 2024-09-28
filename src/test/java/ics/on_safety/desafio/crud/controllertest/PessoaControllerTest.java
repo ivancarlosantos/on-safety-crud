@@ -3,8 +3,8 @@ package ics.on_safety.desafio.crud.controllertest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ics.on_safety.desafio.crud.api.PessoaController;
 import ics.on_safety.desafio.crud.dto.PessoaDTO;
-import ics.on_safety.desafio.crud.dto.PessoaResponse;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
+import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.service.PessoaServices;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,10 +44,10 @@ public class PessoaControllerTest {
     @Test
     void persist() throws Exception {
 
-        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco().toString());
-        PessoaResponse res = new PessoaResponse(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco());
+        Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(),FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
+        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail());
 
-        when(service.persist(dto)).thenReturn(res);
+        when(service.persist(dto)).thenReturn(dto);
 
         String response = mapper.writeValueAsString(dto);
 
@@ -57,20 +57,20 @@ public class PessoaControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .content(response))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.nome").value(res.nome()))
-                .andExpect(jsonPath("$.cpf").value(res.cpf()))
-                .andExpect(jsonPath("$.dataNascimento").value(res.dataNascimento()))
-                .andExpect(jsonPath("$.email").value(res.email()))
+                .andExpect(jsonPath("$.nome").value(dto.nome()))
+                .andExpect(jsonPath("$.cpf").value(dto.cpf()))
+                .andExpect(jsonPath("$.dataNascimento").value(dto.dataNascimento()))
+                .andExpect(jsonPath("$.email").value(dto.email()))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     void testUpdate() throws Exception {
 
-        PessoaResponse resp = new PessoaResponse(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco());
-        PessoaDTO dto = new PessoaDTO(FakeFactory.pessoa().getNome(), "877.930.068-52", "01/01/2000", FakeFactory.pessoa().getEmail(), FakeFactory.pessoa().getEndereco().getCep());
+        Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(),FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
+        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail());
 
-        when(service.update("1", dto)).thenReturn(resp);
+        when(service.update("1", dto)).thenReturn(dto);
 
         String response = mapper.writeValueAsString(dto);
 
@@ -81,31 +81,28 @@ public class PessoaControllerTest {
                         .characterEncoding("UTF-8")
                         .content(response))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nome").value(resp.nome()))
-                .andExpect(jsonPath("$.cpf").value(resp.cpf()))
-                .andExpect(jsonPath("$.dataNascimento").value(resp.dataNascimento()))
-                .andExpect(jsonPath("$.email").value(resp.email()))
+                .andExpect(jsonPath("$.nome").value(dto.nome()))
+                .andExpect(jsonPath("$.cpf").value(dto.cpf()))
+                .andExpect(jsonPath("$.dataNascimento").value(dto.dataNascimento()))
+                .andExpect(jsonPath("$.email").value(dto.email()))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
     void testList() throws Exception {
 
-        PessoaResponse dto1 = new PessoaResponse(
-                FakeFactory.pessoa().getNome(),
+        PessoaDTO dto1 = new PessoaDTO(
+                "Test",
                 "123.456.789-00",
                 "01/01/2000",
-                FakeFactory.pessoa().getEmail(),
-                FakeFactory.pessoa().getEndereco()
+                "email@mail.com"
         );
 
-        PessoaResponse dto2 = new PessoaResponse(
-                FakeFactory.pessoa().getNome(),
+        PessoaDTO dto2 = new PessoaDTO(
+                "Test",
                 "123.456.789-00",
                 "01/01/2000",
-                FakeFactory.pessoa().getEmail(),
-                FakeFactory.pessoa().getEndereco()
-        );
+                "email@mail.com");
 
         when(service.list()).thenReturn(List.of(dto1, dto2));
 
@@ -131,13 +128,11 @@ public class PessoaControllerTest {
 
         String id = "1";
 
-        PessoaResponse dto = new PessoaResponse(
-                FakeFactory.pessoa().getNome(),
+        PessoaDTO dto = new PessoaDTO(
+                "test",
                 "877.930.068-52",
                 "01/01/2000",
-                FakeFactory.pessoa().getEmail(),
-                FakeFactory.pessoa().getEndereco()
-        );
+                "email@mal.com");
 
         when(service.findByID(id)).thenReturn(dto);
 
@@ -153,12 +148,11 @@ public class PessoaControllerTest {
     @Test
     void testFindPessoa() throws Exception {
 
-        PessoaResponse dto = new PessoaResponse(
-                FakeFactory.pessoa().getNome(),
+        PessoaDTO dto = new PessoaDTO(
+                "Test",
                 "123.456.789-00",
                 "01/01/2000",
-                FakeFactory.pessoa().getEmail(),
-                FakeFactory.pessoa().getEndereco()
+                "email@mail.com"
         );
 
         when(service.findPessoaByNome(dto.nome())).thenReturn(List.of(dto));

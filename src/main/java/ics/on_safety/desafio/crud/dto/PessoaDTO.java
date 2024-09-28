@@ -8,7 +8,4 @@ public record PessoaDTO(
 
         String dataNascimento,
 
-        String email,
-
-        String cep) {
-}
+        String email) {}

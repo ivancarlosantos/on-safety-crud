@@ -6,71 +6,111 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.GeneralCodingRules;
+import ics.on_safety.desafio.crud.stream.PubSub;
 import jakarta.persistence.Entity;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
 @AnalyzeClasses(packages = "ics.on_safety.desafio.crud", importOptions = ImportOption.DoNotIncludeTests.class)
 public class ArchitectureTest {
 
+    @ArchTest
+    static ArchRule layerTest = layeredArchitecture()
+            .consideringAllDependencies()
+            .layer("Controller").definedBy("..api..")
+            .layer("Services").definedBy("..service..")
+            .layer("Repository").definedBy("..repository..")
+
+            .whereLayer("Controller").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Services").mayOnlyBeAccessedByLayers("Controller")
+            .whereLayer("Repository").mayOnlyBeAccessedByLayers("Services");
 
     @ArchTest
-    public final ArchRule controllerTest = ArchRuleDefinition.classes()
+    static ArchRule controllerTest = ArchRuleDefinition.classes()
             .that().areAnnotatedWith(RestController.class)
             .should().resideInAPackage("..api..")
             .andShould().haveSimpleNameEndingWith("Controller")
             .andShould().haveSimpleNameNotEndingWith("RestController");
 
     @ArchTest
-    public final ArchRule servicesTest = ArchRuleDefinition.classes()
+    static ArchRule servicesTest = ArchRuleDefinition.classes()
             .that().resideInAPackage("..service..")
             .should().beAnnotatedWith(Service.class);
 
     @ArchTest
-    public final ArchRule componentIsNotAllowed = ArchRuleDefinition.classes()
+    static ArchRule serviceNameHaveBeenFinallyService = ArchRuleDefinition.classes()
+            .that().areAnnotatedWith(Service.class)
+            .should().haveSimpleNameEndingWith("Services");
+
+    @ArchTest
+    static ArchRule componentIsNotAllowed = ArchRuleDefinition.classes()
             .that().resideInAPackage("..service..")
             .should().notBeAnnotatedWith(Component.class)
             .because("Component Annotation is not allowed in package service");
 
     @ArchTest
-    public final ArchRule controllerDoNotCallRepositoryTest = ArchRuleDefinition.noClasses()
+    static ArchRule controllerDoNotCallRepositoryTest = ArchRuleDefinition.noClasses()
             .that().resideInAPackage("..api..")
             .should().dependOnClassesThat().resideInAPackage("..repository..")
-            .as("Controller não pode chamar diretamente o repository.");
+            .because("Controller não pode chamar diretamente o repository.");
 
     @ArchTest
-    public final ArchRule entityTest = ArchRuleDefinition.classes()
+    static ArchRule entityTest = ArchRuleDefinition.classes()
             .that().areAnnotatedWith(Entity.class)
             .should().resideInAPackage("..model..");
 
     @ArchTest
-    public final ArchRule repositoryTest = ArchRuleDefinition.classes()
+    static ArchRule dtoTest = ArchRuleDefinition.classes()
+            .that().resideInAPackage("..dto..")
+            .should()
+            .beRecords();
+
+    @ArchTest
+    static ArchRule exceptionTest = ArchRuleDefinition.classes()
+            .that()
+            .areAnnotatedWith(RestControllerAdvice.class)
+            .should()
+            .resideInAPackage("..exception..")
+            .because("Pertence a um pacote de controle de exceções");
+
+    @ArchTest
+    static ArchRule exceptionMethodTest = ArchRuleDefinition.methods()
+            .that().areAnnotatedWith(ExceptionHandler.class)
+            .should().bePublic();
+
+    @ArchTest
+    static ArchRule repositoryTest = ArchRuleDefinition.classes()
             .that().resideInAPackage("..repository..").should()
             .beAnnotatedWith(Repository.class)
             .because("Repository é uma classe/interface de persistência @Repository");
 
     @ArchTest
-    public final ArchRule repositoryClassInterface = ArchRuleDefinition.classes()
+    static ArchRule repositoryClassInterface = ArchRuleDefinition.classes()
             .that().resideInAPackage("..repository..")
             .should().beInterfaces();
 
     @ArchTest
-    public final ArchRule fieldsEntity = ArchRuleDefinition.fields()
+    static ArchRule fieldsEntity = ArchRuleDefinition.fields()
             .that().areDeclaredInClassesThat()
             .resideInAPackage("..model..")
             .should().bePrivate();
 
     @ArchTest
-    public final ArchRule controllerMethodsTest = ArchRuleDefinition.noMethods()
+    static ArchRule controllerMethodsTest = ArchRuleDefinition.noMethods()
             .that().areDeclaredInClassesThat().areAnnotatedWith(RestController.class)
-            .should().beAnnotatedWith(RequestMapping.class);
+            .should().beAnnotatedWith(RequestMapping.class)
+            .andShould().beAnnotatedWith(RestController.class);
 
     @ArchTest
-    public final ArchRule logTest = ArchRuleDefinition.fields()
+    static ArchRule logTest = ArchRuleDefinition.fields()
             .that().haveRawType(Logger.class)
             .should().bePrivate()
             .andShould().beStatic()
@@ -78,8 +118,8 @@ public class ArchitectureTest {
             .allowEmptyShould(true);
 
     @ArchTest
-    public final ArchRule log2Test = GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING;
+    static ArchRule log2Test = GeneralCodingRules.NO_CLASSES_SHOULD_USE_JAVA_UTIL_LOGGING;
 
     @ArchTest
-    public final ArchRule injectionDependencyTest = GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
+    static ArchRule injectionDependencyTest = GeneralCodingRules.NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
 }
