@@ -68,7 +68,7 @@ public class PessoaControllerTest {
     void testUpdate() throws Exception {
 
         Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(),FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
-        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail());
+        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento(), pessoa.getEmail());
 
         when(service.update("1", dto)).thenReturn(dto);
 
@@ -92,17 +92,18 @@ public class PessoaControllerTest {
     void testList() throws Exception {
 
         PessoaDTO dto1 = new PessoaDTO(
-                "Test",
+                FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
-                "01/01/2000",
-                "email@mail.com"
+                FakeFactory.pessoa().getDataNascimento(),
+                FakeFactory.pessoa().getEmail()
         );
 
         PessoaDTO dto2 = new PessoaDTO(
-                "Test",
+                FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
-                "01/01/2000",
-                "email@mail.com");
+                FakeFactory.pessoa().getDataNascimento(),
+                FakeFactory.pessoa().getEmail()
+        );
 
         when(service.list()).thenReturn(List.of(dto1, dto2));
 
@@ -129,10 +130,11 @@ public class PessoaControllerTest {
         String id = "1";
 
         PessoaDTO dto = new PessoaDTO(
-                "test",
+                FakeFactory.pessoa().getNome(),
                 "877.930.068-52",
-                "01/01/2000",
-                "email@mal.com");
+                FakeFactory.pessoa().getDataNascimento(),
+                FakeFactory.pessoa().getEmail()
+        );
 
         when(service.findByID(id)).thenReturn(dto);
 
@@ -149,10 +151,10 @@ public class PessoaControllerTest {
     void testFindPessoa() throws Exception {
 
         PessoaDTO dto = new PessoaDTO(
-                "Test",
+                FakeFactory.pessoa().getNome(),
                 "123.456.789-00",
-                "01/01/2000",
-                "email@mail.com"
+                FakeFactory.pessoa().getDataNascimento(),
+                FakeFactory.pessoa().getEmail()
         );
 
         when(service.findPessoaByNome(dto.nome())).thenReturn(List.of(dto));

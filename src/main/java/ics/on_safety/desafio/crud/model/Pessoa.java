@@ -1,12 +1,13 @@
 package ics.on_safety.desafio.crud.model;
 
-import ics.on_safety.desafio.crud.stream.PubSub;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CPF;
 
+import java.io.Serializable;
+
 @Entity
-public class Pessoa extends PubSub {
+public class Pessoa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -6,7 +6,6 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.library.GeneralCodingRules;
-import ics.on_safety.desafio.crud.stream.PubSub;
 import jakarta.persistence.Entity;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
@@ -95,7 +94,8 @@ public class ArchitectureTest {
     @ArchTest
     static ArchRule repositoryClassInterface = ArchRuleDefinition.classes()
             .that().resideInAPackage("..repository..")
-            .should().beInterfaces();
+            .should().beAnnotatedWith(Repository.class)
+            .andShould().beInterfaces().because("Classe de contrato com a data base");
 
     @ArchTest
     static ArchRule fieldsEntity = ArchRuleDefinition.fields()

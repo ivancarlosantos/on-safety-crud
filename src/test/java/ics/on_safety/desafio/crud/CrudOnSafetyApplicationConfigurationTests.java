@@ -18,8 +18,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-
-@Slf4j
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CrudOnSafetyApplicationConfigurationTests {
@@ -45,10 +43,10 @@ class CrudOnSafetyApplicationConfigurationTests {
         registry.add("spring.datasource.username", container::getUsername);
         registry.add("spring.datasource.password", container::getPassword);
 
-        log.info("url {}", container.getJdbcUrl());
-        log.info("username {}", container.getUsername());
-        log.info("password {}", container.getPassword());
-        log.info("spring.datasource.driver-class-name {}", container.getJdbcDriverInstance());
+        System.out.println("url: " + container.getJdbcUrl());
+        System.out.println("username: " + container.getUsername());
+        System.out.println("password: " + container.getPassword());
+        System.out.println("spring.datasource.driver-class-name: " + container.getJdbcDriverInstance());
     }
 
     @BeforeEach
