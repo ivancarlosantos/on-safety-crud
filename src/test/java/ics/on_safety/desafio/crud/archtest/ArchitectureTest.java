@@ -2,6 +2,7 @@ package ics.on_safety.desafio.crud.archtest;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchIgnore;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
@@ -24,6 +25,7 @@ import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 @AnalyzeClasses(packages = "ics.on_safety.desafio.crud", importOptions = ImportOption.DoNotIncludeTests.class)
 public class ArchitectureTest {
 
+    //Layer
     @ArchTest
     static ArchRule layerTest = layeredArchitecture()
             .consideringAllDependencies()
@@ -35,6 +37,7 @@ public class ArchitectureTest {
             .whereLayer("Services").mayOnlyBeAccessedByLayers("Controller")
             .whereLayer("Repository").mayOnlyBeAccessedByLayers("Services");
 
+    //Api
     @ArchTest
     static ArchRule controllerTest = ArchRuleDefinition.classes()
             .that().areAnnotatedWith(RestController.class)
@@ -43,33 +46,18 @@ public class ArchitectureTest {
             .andShould().haveSimpleNameNotEndingWith("RestController");
 
     @ArchTest
-    static ArchRule servicesTest = ArchRuleDefinition.classes()
-            .that().resideInAPackage("..service..")
-            .should().beAnnotatedWith(Service.class);
-
-    @ArchTest
-    static ArchRule serviceNameHaveBeenFinallyService = ArchRuleDefinition.classes()
-            .that().areAnnotatedWith(Service.class)
-            .should().haveSimpleNameEndingWith("Services");
-
-    @ArchTest
-    static ArchRule componentIsNotAllowed = ArchRuleDefinition.classes()
-            .that().resideInAPackage("..service..")
-            .should().notBeAnnotatedWith(Component.class)
-            .because("Anotação 'Component' não é permitida no pacote service");
-
-    @ArchTest
     static ArchRule controllerDoNotCallRepositoryTest = ArchRuleDefinition.noClasses()
             .that().resideInAPackage("..api..")
             .should().dependOnClassesThat().resideInAPackage("..repository..")
             .because("Controller não pode chamar diretamente o repository.");
 
     @ArchTest
-    static ArchRule entityTest = ArchRuleDefinition.classes()
-            .that().areAnnotatedWith(Entity.class)
-            .should().resideInAPackage("..model..")
-            .because("Classe responsável pela camada de modelo e persistência");
+    static ArchRule controllerMethodsTest = ArchRuleDefinition.noMethods()
+            .that().areDeclaredInClassesThat().areAnnotatedWith(RestController.class)
+            .should().beAnnotatedWith(RequestMapping.class)
+            .andShould().beAnnotatedWith(RestController.class);
 
+    //DTO
     @ArchTest
     static ArchRule dtoTest = ArchRuleDefinition.classes()
             .that().resideInAPackage("..dto..")
@@ -77,20 +65,43 @@ public class ArchitectureTest {
             .beRecords()
             .because("Classe responsável pela transferência de dados entre cliente e camada de modelo");
 
+    //Exception
     @ArchTest
     static ArchRule exceptionTest = ArchRuleDefinition.classes()
             .that()
             .areAnnotatedWith(RestControllerAdvice.class)
             .should()
             .resideInAPackage("..exception..")
-            .because("Pertence a um pacote de controle de exceções");
+            .because("Pertencem a um pacote de controle de exceções");
 
     @ArchTest
     static ArchRule exceptionMethodTest = ArchRuleDefinition.methods()
             .that().areAnnotatedWith(ExceptionHandler.class)
             .should().bePublic()
-            .because("Classe Responsável por controle e devolutiva de exceção");
+            .because("Metódos Responsáveis por controle e devolutiva de exceção");
 
+    //Model
+    @ArchTest
+    static ArchRule entityTest = ArchRuleDefinition.classes()
+            .that().areAnnotatedWith(Entity.class)
+            .should().resideInAPackage("..model..")
+            .because("Classe responsável pela camada de modelo e persistência");
+
+    @ArchTest
+    static ArchRule inheritanceEntityTest = ArchRuleDefinition.classes()
+            .that().areAnnotatedWith(Entity.class)
+            .should().resideInAPackage("..model..")
+            .andShould().implement(Serializable.class)
+            .because("Classe responsável pela camada de modelo e persistência");
+
+    @ArchTest
+    static ArchRule fieldsEntityTest = ArchRuleDefinition.fields()
+            .that().areDeclaredInClassesThat()
+            .resideInAPackage("..model..")
+            .should().bePrivate()
+            .because("atributos devem ser privados e acessados via método/encapsulamento");
+
+    //Repository
     @ArchTest
     static ArchRule repositoryTest = ArchRuleDefinition.classes()
             .that().resideInAPackage("..repository..").should()
@@ -103,34 +114,41 @@ public class ArchitectureTest {
             .should().beAnnotatedWith(Repository.class)
             .andShould().beInterfaces().because("Classe de contrato com a data base");
 
+    //Service
     @ArchTest
-    static ArchRule fieldsEntity = ArchRuleDefinition.fields()
+    static ArchRule servicesTest = ArchRuleDefinition.classes()
+            .that().resideInAPackage("..service..")
+            .should().beAnnotatedWith(Service.class);
+
+    @ArchTest
+    static ArchRule serviceNameHaveBeenFinallyService = ArchRuleDefinition.classes()
+            .that().areAnnotatedWith(Service.class)
+            .should().haveSimpleNameEndingWith("Services");
+
+    @ArchTest
+    static ArchRule serviceFieldsHasBeenPrivate = ArchRuleDefinition.fields()
             .that().areDeclaredInClassesThat()
-            .resideInAPackage("..model..")
+            .areAnnotatedWith(Service.class)
             .should().bePrivate()
-            .because("atributos devem ser privados e acessados via método/encapsulamento");
+            .because("Instâncias e Objetos devem ser privados em sua declaração");
 
     @ArchTest
-    static ArchRule controllerMethodsTest = ArchRuleDefinition.noMethods()
-            .that().areDeclaredInClassesThat().areAnnotatedWith(RestController.class)
-            .should().beAnnotatedWith(RequestMapping.class)
-            .andShould().beAnnotatedWith(RestController.class);
+    static ArchRule componentIsNotAllowed = ArchRuleDefinition.classes()
+            .that().resideInAPackage("..service..")
+            .should().notBeAnnotatedWith(Component.class)
+            .because("Anotação 'Component' não é permitida no pacote service");
 
+    //Utils
     @ArchTest
-    static ArchRule utilsValidateParameterTest = ArchRuleDefinition
-            .classes()
+    static ArchRule utilsValidateParameterTest = ArchRuleDefinition.classes()
             .that().resideInAPackage("..utils..")
-            .should()
-            .haveSimpleName("ValidateParameter")
+            .should().haveSimpleName("ValidateParameter")
             .because("Classe utilitária para conversão de tipo String/Long e seu tratamento em caso de erro");
 
     @ArchTest
-    static ArchRule utilsValidateTest = ArchRuleDefinition
-            .classes()
-            .that()
-            .resideInAPackage("..utils..")
-            .should()
-            .haveOnlyPrivateConstructors();
+    static ArchRule utilsValidateTest = ArchRuleDefinition.classes()
+            .that().resideInAPackage("..utils..")
+            .should().haveOnlyPrivateConstructors();
 
     @ArchTest
     static ArchRule utilsValidateMethodTest = ArchRuleDefinition.methods()
@@ -138,7 +156,8 @@ public class ArchitectureTest {
             .should().bePublic()
             .because("Para acesso de conversão de tipo");
 
-
+    //Logs
+    //@ArchIgnore
     @ArchTest
     static ArchRule logTest = ArchRuleDefinition.fields()
             .that().haveRawType(Logger.class)
