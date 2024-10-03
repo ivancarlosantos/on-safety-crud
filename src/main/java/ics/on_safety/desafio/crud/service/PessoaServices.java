@@ -21,7 +21,7 @@ public class PessoaServices {
         this.repository = repository;
     }
 
-    public PessoaDTO persist(PessoaDTO dto) throws ParseException {
+    public PessoaDTO persist(PessoaDTO dto) {
 
         Pessoa p = new Pessoa(null, dto.nome(), dto.cpf(), dto.dataNascimento(), dto.email());
 
@@ -29,9 +29,9 @@ public class PessoaServices {
             throw new DataViolationException("[PESSOA/CPF JÁ CADASTRADO]");
         }
 
-        repository.save(p);
+        Pessoa saved = repository.save(p);
 
-        return new PessoaDTO(p.getNome(), p.getCpf(), p.getDataNascimento(), p.getEmail());
+        return new PessoaDTO(saved.getNome(), saved.getCpf(), saved.getDataNascimento(), saved.getEmail());
     }
 
     public PessoaDTO findByID(String value) {

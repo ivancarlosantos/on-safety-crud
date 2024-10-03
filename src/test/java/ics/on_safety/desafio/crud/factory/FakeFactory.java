@@ -17,7 +17,7 @@ public class FakeFactory {
         return new Pessoa(
                 1L,
                 faker.dragonBall().character(),
-                "877.930.068-52",
+                "266.490.058-78",
                 "01/01/2000",
                 faker.internet().emailAddress());
     }

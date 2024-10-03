@@ -62,12 +62,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>8.0.0.Final</version>
@@ -152,21 +146,21 @@
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
-            <version>1.0.1</version>
+            <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5-engine</artifactId>
-            <version>1.0.1</version>
+            <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5-api</artifactId>
-            <version>1.0.1</version>
+            <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
 

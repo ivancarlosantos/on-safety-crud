@@ -24,15 +24,9 @@ public class Pessoa implements Serializable {
     @Email
     private String email;
 
-    public Pessoa(){}
+    public Pessoa() {}
 
-    public Pessoa(
-            Long id,
-            String nome,
-            String cpf,
-            String dataNascimento,
-            String email) {
-
+    public Pessoa(Long id, String nome, String cpf, String dataNascimento, String email) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
@@ -48,20 +42,12 @@ public class Pessoa implements Serializable {
         this.id = id;
     }
 
-    public String getEmail() {
-        return email;
+    public String getNome() {
+        return nome;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(String dataNascimento) {
-        this.dataNascimento = dataNascimento;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getCpf() {
@@ -72,11 +58,30 @@ public class Pessoa implements Serializable {
         this.cpf = cpf;
     }
 
-    public String getNome() {
-        return nome;
+    public String getDataNascimento() {
+        return dataNascimento;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setDataNascimento(String dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "Pessoa{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", dataNascimento='" + dataNascimento + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

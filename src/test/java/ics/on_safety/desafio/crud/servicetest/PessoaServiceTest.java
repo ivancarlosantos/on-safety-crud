@@ -14,7 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.ParseException;
 import java.util.Collections;
@@ -34,8 +34,8 @@ public class PessoaServiceTest {
     @Mock
     private PessoaRepository repository;
 
-    @MockBean
-    private ObjectMapper mapper;
+    @Autowired
+    ObjectMapper mapper;
 
     @Test
     void testDomain() throws ParseException {
@@ -62,35 +62,29 @@ public class PessoaServiceTest {
         verifyNoMoreInteractions(repository);
     }
 
-   /* @Test
-    public void testPersist() throws ParseException, JsonProcessingException {
+    @Test
+    void savedTest() throws ParseException {
 
         Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(), FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
         PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento(), pessoa.getEmail());
+        Pessoa savedPessoa = new Pessoa(1L, dto.nome(), dto.cpf(), dto.dataNascimento(), dto.email());
 
-        when(service.persist(dto)).thenReturn(dto);
+        when(repository.save(any(Pessoa.class))).thenReturn(savedPessoa);
 
-        String response = mapper.writeValueAsString(dto);
+        PessoaDTO result = service.persist(dto);
 
-        System.out.println(response);
-
-        assertNotNull(response);
-        assertEquals(dto.nome(), pessoa.getNome());
-        assertEquals(dto.cpf(), pessoa.getCpf());
-        assertEquals(dto.dataNascimento(), pessoa.getDataNascimento());
-        assertEquals(dto.email(), pessoa.getEmail());
-
-        assertThat(pessoa.getNome()).isNotNull();
-        assertThat(pessoa.getCpf()).isNotNull();
-        assertThat(pessoa.getDataNascimento()).isNotNull();
-        assertThat(pessoa.getEmail()).isNotNull();
-
-        verify(repository, times(1)).findByPessoa(pessoa.getCpf());
+        assertNotNull(result);
+        assertEquals(savedPessoa.getNome(), result.nome());
+        assertEquals(savedPessoa.getCpf(), result.cpf());
+        assertEquals(savedPessoa.getDataNascimento(), result.dataNascimento());
+        assertEquals(savedPessoa.getEmail(), result.email());
 
         verify(repository, times(1)).save(any(Pessoa.class));
 
+        verify(repository, times(1)).findByPessoa(pessoa.getCpf());
+
         verifyNoMoreInteractions(repository);
-    } */
+    }
 
     @Test
     public void testFindByID() throws ParseException {
