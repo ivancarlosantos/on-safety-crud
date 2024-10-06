@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Container;
@@ -113,6 +114,7 @@ class CrudOnSafetyApplicationConfigurationTests {
 
         given()
                 .contentType(ContentType.JSON)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get("/api/list")
                 .then()

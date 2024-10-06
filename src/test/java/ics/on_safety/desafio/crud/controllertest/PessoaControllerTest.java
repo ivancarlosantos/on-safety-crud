@@ -6,6 +6,7 @@ import ics.on_safety.desafio.crud.dto.PessoaDTO;
 import ics.on_safety.desafio.crud.factory.FakeFactory;
 import ics.on_safety.desafio.crud.model.Pessoa;
 import ics.on_safety.desafio.crud.service.PessoaServices;
+import ics.on_safety.desafio.crud.utils.JsonUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,18 +45,16 @@ public class PessoaControllerTest {
     @Test
     void persist() throws Exception {
 
-        Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(),FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
-        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento().toString(), pessoa.getEmail());
+        Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(), FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
+        PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento(), pessoa.getEmail());
 
         when(service.persist(dto)).thenReturn(dto);
-
-        String response = mapper.writeValueAsString(dto);
 
         mockMvc.perform(post("/api/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .accept(MediaType.APPLICATION_JSON)
-                        .content(response))
+                        .content(JsonUtils.toJson(dto)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.nome").value(dto.nome()))
                 .andExpect(jsonPath("$.cpf").value(dto.cpf()))
@@ -67,19 +66,15 @@ public class PessoaControllerTest {
     @Test
     void testUpdate() throws Exception {
 
-        Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(),FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
+        Pessoa pessoa = new Pessoa(FakeFactory.pessoa().getId(), FakeFactory.pessoa().getNome(), FakeFactory.pessoa().getCpf(), FakeFactory.pessoa().getDataNascimento(), FakeFactory.pessoa().getEmail());
         PessoaDTO dto = new PessoaDTO(pessoa.getNome(), pessoa.getCpf(), pessoa.getDataNascimento(), pessoa.getEmail());
 
         when(service.update("1", dto)).thenReturn(dto);
 
-        String response = mapper.writeValueAsString(dto);
-
-        System.out.println(response);
-
         mockMvc.perform(put("/api/update/" + "1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .content(response))
+                        .content(JsonUtils.toJson(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome").value(dto.nome()))
                 .andExpect(jsonPath("$.cpf").value(dto.cpf()))
@@ -139,7 +134,9 @@ public class PessoaControllerTest {
         when(service.findByID(id)).thenReturn(dto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/search/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(JsonUtils.toJson(dto)))
                 .andExpect(status().isFound())
                 .andExpect(jsonPath("$.nome").value(dto.nome()))
                 .andExpect(jsonPath("$.cpf").value(dto.cpf()))
@@ -160,7 +157,10 @@ public class PessoaControllerTest {
         when(service.findPessoaByNome(dto.nome())).thenReturn(List.of(dto));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/find")
-                        .param("nome", dto.nome()))
+                        .param("nome", dto.nome())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(JsonUtils.toJson(dto)))
                 .andExpect(status().isFound())
                 .andExpect(jsonPath("$[0].nome", is(dto.nome())))
                 .andDo(MockMvcResultHandlers.print());
@@ -174,7 +174,9 @@ public class PessoaControllerTest {
         when(service.delete(id)).thenReturn(String.valueOf(""));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/delete/{id}", 1L)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .content(JsonUtils.toJson(id)))
                 .andExpect(status().isNoContent())
                 .andDo(MockMvcResultHandlers.print());
     }
